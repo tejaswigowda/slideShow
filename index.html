@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+<script
+  src="js/jquery-3.1.1.min.js"></script>
+   <link rel="stylesheet" href="css/themes/basic.css"> 
+
+<script>
+function loadCSSfile(filename){
+    var fileref=document.createElement('link')
+    fileref.setAttribute("rel","stylesheet")
+    fileref.setAttribute("href", filename)
+
+  if (typeof fileref!="undefined"){
+      var ret = document.getElementsByTagName("head")[0].appendChild(fileref);
+  } 
+  return ret;
+}
+
+var styleName = "basic";
+
+var hash = window.location.hash.replace("#", "");
+var args = hash.split("_$_");
+var urls = args[0].split(",");
+if(args[1]){
+  args = args.split(",");
+  for(var i=0; i < args.length; i++){
+    var key = args[i].split(":");
+    var value = key[1]? key[1]: false;
+    if(value){
+      window[key] = value;
+    }
+  }
+}
+
+// loadCSSfile("css/themes/" + styleName + ".css")
+
+var main = function(){
+  var mut = "";
+  var slidemu = "";
+  for(var i = 0; i < urls.length; i++){
+     mut += "<a id='gotoN" + i + "' class='gotoN' href='javascript:goToSlide(" + i + ")'>" + (i+1).toString() + "</a>";
+     slidemu += "<div id='slide" + i + "' class='slide' style='background-image:url(" + urls[i] + ")'></div>";
+  }
+  document.getElementById("snWrapper").innerHTML = mut;
+  document.getElementById("ssWrapper").innerHTML = slidemu;
+  goToSlide(0);
+}
+
+var animation = "fade";
+//var animation = "slide";
+
+var currentSlide = 0;
+
+var goToSlide = function(slideno){
+    if(animation === "fade"){
+      $(".slide").animate({"opacity":"0"},1000);
+      $("#slide" + slideno).stop().animate({"opacity":"1"},1000);
+    }
+    else if(animation === "slide"){
+      // Assignment 3
+    }
+    currentSlide = slideno;
+    $(".gotoN").removeClass("active");
+    $("#gotoN" + slideno).stop().addClass("active");
+}
+
+
+var moveLeft = function()
+{
+  var nextSlide = (currentSlide == 0) ? (urls.length - 1) : (currentSlide - 1);
+    if(animation === "fade"){
+      currentSlide = nextSlide;
+      goToSlide(currentSlide);
+    }
+    else if(animation === "slide"){
+      // Assignment 3
+    }
+}
+
+var moveRight = function()
+{
+  var nextSlide = (currentSlide == urls.length - 1) ? 0 : (currentSlide + 1);
+    if(animation === "fade"){
+      currentSlide = nextSlide;
+      goToSlide(currentSlide);
+    }
+    else if(animation === "slide"){
+      // Assignment 3
+    }
+}
+</script>
+
+</head>
+
+<body onload='main()'>
+  <div id='ssWrapper'> </div>
+  <div id='snWrapper'> </div>
+  <div id='moveWrapper'>
+    <a class='button' href='javascript:moveLeft()'><i class="fa fa-chevron-left" aria-hidden="true"></i>
+</a>
+    <a class='button' href='javascript:moveRight()'><i class="fa fa-chevron-right" aria-hidden="true"></i>
+</a>
+  </div>
+</body>
+
+</html>
+
