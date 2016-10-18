@@ -7,6 +7,11 @@
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
 <script>
+
+(function($){$.fn.touchwipe=function(settings){var config={min_move_x:20,min_move_y:20,wipeLeft:function(){},wipeRight:function(){},wipeUp:function(){},wipeDown:function(){},preventDefaultEvents:true};if(settings)$.extend(config,settings);this.each(function(){var startX;var startY;var isMoving=false;function cancelTouch(){this.removeEventListener('touchmove',onTouchMove);startX=null;isMoving=false}function onTouchMove(e){if(config.preventDefaultEvents){e.preventDefault()}if(isMoving){var x=e.touches[0].pageX;var y=e.touches[0].pageY;var dx=startX-x;var dy=startY-y;if(Math.abs(dx)>=config.min_move_x){cancelTouch();if(dx>0){config.wipeLeft()}else{config.wipeRight()}}else if(Math.abs(dy)>=config.min_move_y){cancelTouch();if(dy>0){config.wipeDown()}else{config.wipeUp()}}}}function onTouchStart(e){if(e.touches.length==1){startX=e.touches[0].pageX;startY=e.touches[0].pageY;isMoving=true;this.addEventListener('touchmove',onTouchMove,false)}}if('ontouchstart'in document.documentElement){this.addEventListener('touchstart',onTouchStart,false)}});return this}})(jQuery);
+
+
+
 function loadCSSfile(filename){
     var fileref=document.createElement('link')
     fileref.setAttribute("rel","stylesheet")
@@ -24,7 +29,6 @@ var args = hash.split("__$__");
 var urls = args[0].split(",");
 if(args[1]){
   args = args[1].split(",");
-  console.log(args);
   for(var i=0; i < args.length; i++){
     var key = args[i].split(":");
     var value = key[1]? key[1]: false;
@@ -71,7 +75,7 @@ var main = function(){
   var flag = true;
   var goToSlide = function(slidenum){
     setTimeout('document.getElementById("ssWrapper").style.opacity = "1"',550);
-    var w = $("body").innerWidth();
+    var w = $("body").innerWidth()/4;
     var aa = animationLeftOut + " " + animationRightIn + " " + animationRightOut + " " + animationLeftIn;
     for(i=0; i < urls.length; i++) {
       if(i == slidenum) {
@@ -88,12 +92,15 @@ var main = function(){
             $("#slide" + i).stop().removeClass(aa).addClass(animationLeftIn);
           flag = true;
         }
+        $("#slide" + i).stop().css({"left": "0px"});
       }
       else if(i < slidenum){
         $("#slide" + i).stop().removeClass(aa).addClass(animationLeftOut);
+        $("#slide" + i).stop().css({"left": (w * (i-slidenum)) + "px"});
       }
       else{
         $("#slide" + i).stop().removeClass(aa).addClass(animationRightOut);
+        $("#slide" + i).stop().css({"left": (w * (i-slidenum)) + "px"});
       }
     }
     currentSlide = slidenum;
@@ -104,14 +111,17 @@ var main = function(){
 
   var moveLeft = function() {
     var nextSlide = (currentSlide == 0) ? urls.length - 1 : (currentSlide - 1);
+    if(currentSlide != 0)
+      flag = false;
     currentSlide = nextSlide;
-    flag = false;
     goToSlide(currentSlide);
   }
 
   var moveRight = function() {
     var nextSlide = (currentSlide == urls.length - 1) ? 0 : (currentSlide + 1);
     currentSlide = nextSlide;
+    if(currentSlide == 0)
+      flag = false;
     goToSlide(currentSlide);
   }
 </script>
