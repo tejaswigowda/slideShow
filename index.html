@@ -6,8 +6,6 @@
   src="http://code.jquery.com/jquery-3.1.1.min.js"
       integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
     crossorigin="anonymous"></script>
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-
 <script>
 function loadCSSfile(filename){
     var fileref=document.createElement('link')
@@ -63,53 +61,40 @@ var main = function(){
 
   //var animation = "fade";
   var animation = "slide";
+  var animationLeftIn = "fadeInLeft";
+  var animationRightIn = "fadeInRight";
+  var animationLeftOut = "fadeOutLeft";
+  var animationRightOut = "fadeOutRight";
 
   var currentSlide = 0;
 
+  var flag = true;
   var goToSlide = function(slidenum){
     setTimeout('document.getElementById("ssWrapper").style.opacity = "1"',550);
-    if(animation == "fade") {
-      $(".slide").animate({"opacity":"0"},500);
-      $("#slide" + slidenum).stop().animate({"opacity":"1"},500);
-    }
-    else if(animation == "slide") {
-      var w = $("body").innerWidth();
-      for(i=0; i < urls.length; i++) {
-        if(i == slidenum) {
-          $("#slide" + i).stop().animate({"margin-left": "0px"}, 500, "swing")
+    var w = $("body").innerWidth();
+    var aa = animationLeftOut + " " + animationRightIn + " " + animationRightOut + " " + animationLeftIn;
+    for(i=0; i < urls.length; i++) {
+      if(i == slidenum) {
+        if(flag){
+          if(currentSlide > slidenum)
+            $("#slide" + i).stop().removeClass(aa).addClass(animationLeftIn);
+          else
+            $("#slide" + i).stop().removeClass(aa).addClass(animationRightIn);
         }
-        else {
-            $("#slide" + i).stop().animate({"margin-left": (w * (i-slidenum)) + "px"}, 500, "swing")
+        else{
+          if(currentSlide > slidenum)
+            $("#slide" + i).stop().removeClass(aa).addClass(animationRightIn);
+          else
+            $("#slide" + i).stop().removeClass(aa).addClass(animationLeftIn);
+          flag = true;
         }
       }
-      // old version
-      /*if(slidenum == 0) {
-        $("#slide0").animate({"margin-left": "0px"}, 500)
-        $("#slide1").animate({"margin-left": w + "px"}, 500)
-        $("#slide2").animate({"margin-left": w * 2 + "px"}, 500)
-        $("#slide3").animate({"margin-left": w * 3 + "px"}, 500)
+      else if(i < slidenum){
+        $("#slide" + i).stop().removeClass(aa).addClass(animationLeftOut);
       }
-      else if(slidenum == 1) {
-        $("#slide0").animate({"margin-left": "-" + w + "px"}, 500)
-        $("#slide1").animate({"margin-left": "0px"}, 500)
-        $("#slide2").animate({"margin-left": w + "px"}, 500)
-        $("#slide3").animate({"margin-left": w * 2 + "px"}, 500)
+      else{
+        $("#slide" + i).stop().removeClass(aa).addClass(animationRightOut);
       }
-      else if(slidenum == 2) {
-        $("#slide0").animate({"margin-left": "-" + w * 2 + "px"}, 500)
-        $("#slide1").animate({"margin-left": "-" + w + "px"}, 500)
-        $("#slide2").animate({"margin-left": "0px"}, 500)
-        $("#slide3").animate({"margin-left": w + "px"}, 500)
-      }
-      else if(slidenum == 3) {
-        $("#slide0").animate({"margin-left": "-" + w * 3 + "px"}, 500)
-        $("#slide1").animate({"margin-left": "-" + w * 2 + "px"}, 500)
-        $("#slide2").animate({"margin-left": "-" + w + "px"}, 500)
-        $("#slide3").animate({"margin-left": "0px"}, 500)
-      }*/
-      //$(".slide").animate({"margin-left": w + "px"}, 1000)
-      //$(".slide").animate({"margin-right": "-" + w + "px"}, 1000)
-      //$("#slide" + slidenum).animate({"margin-left": "0px"}, 1000)
     }
     currentSlide = slidenum;
     $("#snWrapper button").removeClass("active");
@@ -119,28 +104,19 @@ var main = function(){
 
   var moveLeft = function() {
     var nextSlide = (currentSlide == 0) ? urls.length - 1 : (currentSlide - 1);
-    if(animation == "fade") {
-      currentSlide = nextSlide;
-      goToSlide(currentSlide);
-    }
-    else if(animation == "slide") {
-      currentSlide = nextSlide;
-      goToSlide(currentSlide);
-    }
+    currentSlide = nextSlide;
+    flag = false;
+    goToSlide(currentSlide);
   }
 
-    var moveRight = function() {
-      var nextSlide = (currentSlide == urls.length - 1) ? 0 : (currentSlide + 1);
-      if(animation == "fade") {
-        currentSlide = nextSlide;
-        goToSlide(currentSlide);
-      }
-      else if(animation == "slide") {
-        currentSlide = nextSlide;
-        goToSlide(currentSlide);
-      }
-    }
+  var moveRight = function() {
+    var nextSlide = (currentSlide == urls.length - 1) ? 0 : (currentSlide + 1);
+    currentSlide = nextSlide;
+    goToSlide(currentSlide);
+  }
 </script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.2/animate.min.css" />
 
 </head>
 
