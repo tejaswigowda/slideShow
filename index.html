@@ -1,9 +1,12 @@
 <!doctype html>
 <html>
 <head>
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width, maximum-scale=1.0">
 <script
-  src="js/jquery-3.1.1.min.js"></script>
-   <link rel="stylesheet" href="css/themes/basic.css"> 
+  src="http://code.jquery.com/jquery-3.1.1.min.js"
+      integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 
 <script>
 function loadCSSfile(filename){
@@ -18,77 +21,125 @@ function loadCSSfile(filename){
 }
 
 var styleName = "basic";
-
 var hash = window.location.hash.replace("#", "");
-var args = hash.split("_$_");
+var args = hash.split("__$__");
 var urls = args[0].split(",");
 if(args[1]){
-  args = args.split(",");
+  args = args[1].split(",");
+  console.log(args);
   for(var i=0; i < args.length; i++){
     var key = args[i].split(":");
     var value = key[1]? key[1]: false;
     if(value){
-      window[key] = value;
+      window[key[0]] = value;
     }
   }
 }
 
-// loadCSSfile("css/themes/" + styleName + ".css")
+loadCSSfile("css/themes/" + styleName + ".css")
+
+function assignBodyClassName()
+{
+  var cn = "";
+  var ua = window.navigator.userAgent;
+  // your logic here to determine id cn = 'mouse' or 'touch'
+    $("body").addClass(cn);
+}
+
 
 var main = function(){
+  assignBodyClassName();
   var mut = "";
   var slidemu = "";
   for(var i = 0; i < urls.length; i++){
-     mut += "<a id='gotoN" + i + "' class='gotoN' href='javascript:goToSlide(" + i + ")'>" + (i+1).toString() + "</a>";
+     mut += "<button onclick='goToSlide(" + i + ")'>" + (i+1).toString() + "</button>";
      slidemu += "<div id='slide" + i + "' class='slide' style='background-image:url(" + urls[i] + ")'></div>";
   }
   document.getElementById("snWrapper").innerHTML = mut;
+  document.getElementById("ssWrapper").style.opacity = "0"
   document.getElementById("ssWrapper").innerHTML = slidemu;
-  goToSlide(0);
+  setTimeout("goToSlide(0)", 100)
 }
 
-var animation = "fade";
-//var animation = "slide";
+  //var animation = "fade";
+  var animation = "slide";
 
-var currentSlide = 0;
+  var currentSlide = 0;
 
-var goToSlide = function(slideno){
-    if(animation === "fade"){
-      $(".slide").animate({"opacity":"0"},1000);
-      $("#slide" + slideno).stop().animate({"opacity":"1"},1000);
+  var goToSlide = function(slidenum){
+    setTimeout('document.getElementById("ssWrapper").style.opacity = "1"',550);
+    if(animation == "fade") {
+      $(".slide").animate({"opacity":"0"},500);
+      $("#slide" + slidenum).stop().animate({"opacity":"1"},500);
     }
-    else if(animation === "slide"){
-      // Assignment 3
+    else if(animation == "slide") {
+      var w = $("body").innerWidth();
+      for(i=0; i < urls.length; i++) {
+        if(i == slidenum) {
+          $("#slide" + i).stop().animate({"margin-left": "0px"}, 500, "swing")
+        }
+        else {
+            $("#slide" + i).stop().animate({"margin-left": (w * (i-slidenum)) + "px"}, 500, "swing")
+        }
+      }
+      // old version
+      /*if(slidenum == 0) {
+        $("#slide0").animate({"margin-left": "0px"}, 500)
+        $("#slide1").animate({"margin-left": w + "px"}, 500)
+        $("#slide2").animate({"margin-left": w * 2 + "px"}, 500)
+        $("#slide3").animate({"margin-left": w * 3 + "px"}, 500)
+      }
+      else if(slidenum == 1) {
+        $("#slide0").animate({"margin-left": "-" + w + "px"}, 500)
+        $("#slide1").animate({"margin-left": "0px"}, 500)
+        $("#slide2").animate({"margin-left": w + "px"}, 500)
+        $("#slide3").animate({"margin-left": w * 2 + "px"}, 500)
+      }
+      else if(slidenum == 2) {
+        $("#slide0").animate({"margin-left": "-" + w * 2 + "px"}, 500)
+        $("#slide1").animate({"margin-left": "-" + w + "px"}, 500)
+        $("#slide2").animate({"margin-left": "0px"}, 500)
+        $("#slide3").animate({"margin-left": w + "px"}, 500)
+      }
+      else if(slidenum == 3) {
+        $("#slide0").animate({"margin-left": "-" + w * 3 + "px"}, 500)
+        $("#slide1").animate({"margin-left": "-" + w * 2 + "px"}, 500)
+        $("#slide2").animate({"margin-left": "-" + w + "px"}, 500)
+        $("#slide3").animate({"margin-left": "0px"}, 500)
+      }*/
+      //$(".slide").animate({"margin-left": w + "px"}, 1000)
+      //$(".slide").animate({"margin-right": "-" + w + "px"}, 1000)
+      //$("#slide" + slidenum).animate({"margin-left": "0px"}, 1000)
     }
-    currentSlide = slideno;
-    $(".gotoN").removeClass("active");
-    $("#gotoN" + slideno).stop().addClass("active");
-}
+    currentSlide = slidenum;
+    $("#snWrapper button").removeClass("active");
+    $("#snWrapper button:nth-of-type(" + (slidenum + 1) + ")").stop().addClass("active");
+  }
 
 
-var moveLeft = function()
-{
-  var nextSlide = (currentSlide == 0) ? (urls.length - 1) : (currentSlide - 1);
-    if(animation === "fade"){
+  var moveLeft = function() {
+    var nextSlide = (currentSlide == 0) ? urls.length - 1 : (currentSlide - 1);
+    if(animation == "fade") {
       currentSlide = nextSlide;
       goToSlide(currentSlide);
     }
-    else if(animation === "slide"){
-      // Assignment 3
-    }
-}
-
-var moveRight = function()
-{
-  var nextSlide = (currentSlide == urls.length - 1) ? 0 : (currentSlide + 1);
-    if(animation === "fade"){
+    else if(animation == "slide") {
       currentSlide = nextSlide;
       goToSlide(currentSlide);
     }
-    else if(animation === "slide"){
-      // Assignment 3
+  }
+
+    var moveRight = function() {
+      var nextSlide = (currentSlide == urls.length - 1) ? 0 : (currentSlide + 1);
+      if(animation == "fade") {
+        currentSlide = nextSlide;
+        goToSlide(currentSlide);
+      }
+      else if(animation == "slide") {
+        currentSlide = nextSlide;
+        goToSlide(currentSlide);
+      }
     }
-}
 </script>
 
 </head>
@@ -97,12 +148,9 @@ var moveRight = function()
   <div id='ssWrapper'> </div>
   <div id='snWrapper'> </div>
   <div id='moveWrapper'>
-    <a class='button' href='javascript:moveLeft()'><i class="fa fa-chevron-left" aria-hidden="true"></i>
-</a>
-    <a class='button' href='javascript:moveRight()'><i class="fa fa-chevron-right" aria-hidden="true"></i>
-</a>
+    <button onclick='moveLeft()'><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
+    <button onclick='moveRight()'><i class="fa fa-chevron-right" aria-hidden="true"></i></button>
   </div>
 </body>
 
 </html>
-
