@@ -57,40 +57,77 @@ var main = function(){
      mut += "<button onclick='goToSlide(" + i + ")'>" + (i+1).toString() + "</button>";
      slidemu += "<div id='slide" + i + "' class='slide' style='background-image:url(" + urls[i] + ")'></div>";
   }
-  document.getElementById("snWrapper").innerHTML = mut;
+  document.getElementById("snWrapperInner").innerHTML = mut;
+  document.getElementById("snWrapperInner").style.minWidth = urls.length * 30 + "px";
   document.getElementById("ssWrapper").style.opacity = "0"
   document.getElementById("ssWrapper").innerHTML = slidemu;
   setTimeout("goToSlide(0)", 100)
+  $("#ssWrapper").touchwipe({
+     wipeLeft: function() { alert("left"); },
+     wipeRight: function() { alert("right"); },
+     wipeUp: function() { alert("up"); },
+     wipeDown: function() { alert("down"); },
+     min_move_x: 20,
+     min_move_y: 20,
+     preventDefaultEvents: true
+  });
 }
 
   //var animation = "fade";
   var animation = "slide";
-  var animationLeftIn = "fadeInLeft";
-  var animationRightIn = "fadeInRight";
-  var animationLeftOut = "fadeOutLeft";
-  var animationRightOut = "fadeOutRight";
+  var animationLeftIn = animation + "InLeft";
+  var animationRightIn = animation + "InRight";
+  var animationLeftOut = animation + "OutLeft";
+  var animationRightOut = animation + "OutRight";
+  var slideKern = 4;
 
   var currentSlide = 0;
 
-  var flag = true;
+  var getFlag = function(c,n){
+    var retf = false;
+    var l = urls.length;
+    var dr = 0;
+    var dl = 0;
+    if (c < n){
+      dr = n - c;
+    }
+    else{
+      dr =  l - n + c;
+    }
+
+    if (c < n){
+      dl =  l - n + c;
+    }
+    else{
+      dl = n - c;
+    }
+
+    if (dr > dl){
+      retf = true;
+    }
+    return retf;
+  }
+
+  var flag = null;
   var goToSlide = function(slidenum){
     setTimeout('document.getElementById("ssWrapper").style.opacity = "1"',550);
-    var w = $("body").innerWidth()/4;
+    var w = $("body").innerWidth()/slideKern;
     var aa = animationLeftOut + " " + animationRightIn + " " + animationRightOut + " " + animationLeftIn;
     for(i=0; i < urls.length; i++) {
       if(i == slidenum) {
-        if(flag){
-          if(currentSlide > slidenum)
+        if(flag == "next"){
+          if(getFlag(currentSlide,slidenum))
             $("#slide" + i).stop().removeClass(aa).addClass(animationLeftIn);
           else
             $("#slide" + i).stop().removeClass(aa).addClass(animationRightIn);
+          flag = null;
         }
         else{
           if(currentSlide > slidenum)
             $("#slide" + i).stop().removeClass(aa).addClass(animationRightIn);
           else
             $("#slide" + i).stop().removeClass(aa).addClass(animationLeftIn);
-          flag = true;
+          flag = null;
         }
         $("#slide" + i).stop().css({"left": "0px"});
       }
@@ -112,7 +149,7 @@ var main = function(){
   var moveLeft = function() {
     var nextSlide = (currentSlide == 0) ? urls.length - 1 : (currentSlide - 1);
     if(currentSlide != 0)
-      flag = false;
+      flag = "prev";
     currentSlide = nextSlide;
     goToSlide(currentSlide);
   }
@@ -121,7 +158,7 @@ var main = function(){
     var nextSlide = (currentSlide == urls.length - 1) ? 0 : (currentSlide + 1);
     currentSlide = nextSlide;
     if(currentSlide == 0)
-      flag = false;
+      flag = "next";
     goToSlide(currentSlide);
   }
 </script>
@@ -132,7 +169,9 @@ var main = function(){
 
 <body onload='main()'>
   <div id='ssWrapper'> </div>
-  <div id='snWrapper'> </div>
+  <div id='snWrapper'> 
+    <div id='snWrapperInner'> </div>
+  </div>
   <div id='moveWrapper'>
     <button onclick='moveLeft()'><i class="fa fa-chevron-left" aria-hidden="true"></i></button>
     <button onclick='moveRight()'><i class="fa fa-chevron-right" aria-hidden="true"></i></button>

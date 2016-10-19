@@ -14,10 +14,15 @@ button{
     font-size: 40px;
 }
 
+html{
+  overflow: hidden;
+}
+
 body{
     min-height: 100%;
     position: absolute;
     min-width: 100%;
+    max-width: 100%;
     overflow: hidden;
     margin: 0;
 }
@@ -39,6 +44,7 @@ body{
     bottom: 10px;
     width: calc(90% - 120px);
     left: 5%;
+    overflow-x: auto;
 }
 
 #moveWrapper
@@ -64,7 +70,7 @@ body{
   -moz-animation-duration: 1s;
   -webkit-animation-duration: 1s;
   animation-duration: 1s;
-  transition-duration: .5s;
+  transition-duration: 1s;
   transition-property: left;
 }
 #snWrapper button
